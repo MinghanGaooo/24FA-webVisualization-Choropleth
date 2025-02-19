@@ -1,0 +1,1229 @@
+<html>
+
+<head>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="https://d3js.org/topojson.v3.min.js"></script>
+    <meta charset="UTF-8">
+</head>
+
+<style>
+    body {
+        background-color: #F4F8F1;
+        padding: 20px;
+    }
+
+    h1 {
+        color: #8A1D12;
+
+    }
+
+    .outline {
+        fill: none;
+        stroke: #50150A;
+        stroke-width: 1px;
+    }
+
+    /* topic button syle */
+    #topicButtons {
+        display: grid;
+        grid-template-columns: repeat(2, 250px);
+        grid-auto-rows: 60px;
+
+    }
+
+    .topicButton {
+        margin-bottom: 20px;
+        width: 80%;
+        border: none;
+        background: #DC6142;
+        color: #F4F8F1;
+        position: relative;
+        padding: 0.7em;
+        font-size: 12px;
+        font-weight: bold;
+        transition: 0.1s;
+        border-radius: 5px;
+        opacity: 0.7;
+        letter-spacing: 1px;
+        box-shadow: #c0392b 0px 6px 2px, #000000e0 0px 8px 5px;
+    }
+
+    /* when hover */
+    .topicButton:hover {
+        background: #cb3e2e;
+        box-shadow: #aa3326 0px 6px 2px, #000000e0 0px 8px 5px;
+        opacity: 1;
+    }
+
+    /* animation after click*/
+    .topicButton:active {
+        top: 2px;
+        box-shadow: #c0392b 0px 3px 2px, #000000e0 0px 3px 5px;
+        opacity: 1;
+    }
+
+    /* when clickedk*/
+    .topicButton.clicked {
+        background: #cb3e2e;
+        box-shadow: #aa3326 0px 6px 2px, #000000e0 0px 8px 5px;
+        opacity: 1;
+    }
+
+    /* style for the year Button*/
+    .yearButton {
+        background: none;
+        border: none;
+    }
+
+    /* style when hover the button*/
+    .yearButton:hover {
+        background: #DC6142;
+        border-radius: 5px;
+        box-shadow: #c0392b 0px 1px 2px;
+        color: #F4F8F1;
+    }
+
+    /* style when cicked the button*/
+    .yearButton.clicked {
+        background: #DC6142;
+        border-radius: 5px;
+        box-shadow: #c0392b 0px 1px 2px;
+        color: #F4F8F1;
+    }
+
+    /* style for the reset button*/
+    #resetButton {
+        margin-top: 20px;
+        padding: 10px;
+        background: #959595;
+        font-size: 12px;
+        font-weight: bold;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        position: relative;
+        transition: 0.1s;
+        letter-spacing: 1px;
+        width: 200px;
+        box-shadow: #808080 0px 6px 2px, #000000e0 0px 8px 5px;
+    }
+
+    /* style for the reset button when hover*/
+    #resetButton:hover {
+        background: #6d6d6d;
+        box-shadow: #535353 0px 6px 2px, #000000e0 0px 8px 5px;
+    }
+
+
+    /* animation when click the reset button*/
+    #resetButton:active {
+        top: 2px;
+        box-shadow: #535353 0px 3px 2px, #000000e0 0px 3px 5px;
+    }
+
+    /* style for the reset button after clicked*/
+    #resetButton.clicked {
+        background: #6d6d6d;
+        box-shadow: #535353 0px 6px 2px, #000000e0 0px 8px 5px;
+    }
+
+    /* style for the information for region when mouseover*/
+    .regionInfo {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background-color: #DC6142;
+        height: 150px;
+        width: 150px;
+        border-radius: 100px;
+        box-shadow: #000000e0 0px 3px 5px;
+        opacity: 0.8;
+    }
+
+    /* style for the region text*/
+    .regionText {
+        font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+        color: black;
+        font-size: 12px;
+        text-align: center;
+    }
+
+    /* style for the region title*/
+    .regionTitle {
+        font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+        color: black;
+        font-size: 20px;
+        font-weight: bold;
+        text-align: center;
+    }
+
+    /* style for the range bar*/
+    #yearRange {
+        -webkit-appearance: none;
+        appearance: none;
+        background: #8A1D12;
+        height: 4px;
+        border-radius: 10px;
+        cursor: pointer;
+        width: 15rem;
+    }
+
+    /* style for the scroll bar of the range bar*/
+    #yearRange::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 20px;
+        height: 15px;
+        background: #8A1D12;
+        border: solid 2px #F4F8F1;
+        border-radius: 10px;
+        cursor: pointer;
+    }
+
+    #year {
+        -webkit-appearance: none;
+        appearance: none;
+        background: #8A1D12;
+        height: 4px;
+        border-radius: 10px;
+        cursor: pointer;
+        width: 15rem;
+    }
+
+    #year::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 20px;
+        height: 15px;
+        background: #8A1D12;
+        border: solid 2px #F4F8F1;
+        border-radius: 10px;
+        cursor: pointer;
+    }
+</style>
+
+</html>
+
+<body>
+    <h1 style="display: flex; align-items: center; justify-content: center; font-size: 50px; margin-bottom: 20px;">
+        China’s Economic Pulse
+        Over The Years</h1>
+    <p style="color:#50150A; display: flex; align-items: center; justify-content: center;"><strong>Group
+            member:</strong> Xinyi Zhou(xz255) | Minghan Gao(mg2328) | Warren Hua(wsh48)</p>
+
+    <!-- Create a svg for China map -->
+    <div style="display: flex; flex-direction: row;">
+        <div style="display: flex; flex-direction: column; align-items: center;">
+            <div style="display: flex; flex-direction: row;">
+                <svg id="china" width="700" height="700" style="margin-left:30px; margin-top:20px;"></svg>
+
+                <div style="display: flex; flex-direction: column; margin-left: 50px;">
+                    <p style="color:#8A1D12; margin-bottom: 5px; font-weight: bold; margin-top:40px; margin-bottom: 10px;
+                   font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', 
+                   Geneva, Verdana, sans-serif;">Choose the year:</p>
+                    <div style="display:flex; flex-direction: column;">
+                        <div id="yearRangeBar" style="display: flex; flex-direction: row; gap:10px;
+                            width:550;justify-content:space-between;">
+                        </div>
+                        <svg id="yearRangeAxis" height="6" width="550" style="margin-top:1;z-index: 99;"></svg>
+                        <input type="range" id="yearRange" name="yearRange" min="2004" max="2024" step="10"
+                            style="margin:0; width: 530; margin-left: 10; margin-right: 10; margin-bottom: 20px;" />
+                        <input type="range" id="year" name="yearRange" step="1"
+                            style="margin:0; width: 530; margin-left: 10; margin-right: 10;" />
+                        <svg id="yearAxis" height="6" width="550"></svg>
+                        <div id="yearBar"
+                            style="display: flex; flex-direction: row; gap:10px; width:550; justify-content: space-between;">
+                        </div>
+                    </div>
+                    <p style="color:#8A1D12; margin-bottom: 5px; font-weight: bold; margin-top:30px; margin-bottom: 10px;
+                   font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', 
+                   Geneva, Verdana, sans-serif;">Choose the data topic:</p>
+                    <div id="topicButtons"></div>
+                    <button id="resetButton">
+                        Reset Map
+                    </button>
+                    <svg id="colorLegend" height="50" width="550" style=" margin-top:30px;"></svg>
+                </div>
+            </div>
+
+            <svg id="barchart" height="500" width="800" style="margin-top:50px"></svg>
+        </div>
+    </div>
+    <script>
+        const chinaMap = d3.select("#china");
+        const width = chinaMap.attr("width");
+        const height = chinaMap.attr("height");
+        const margins = { top: 50, right: 10, bottom: 10, left: 10 };
+        const chinaMapWidth = width - margins.left - margins.right;
+        const chinaMapHeight = height - margins.top - margins.bottom;
+
+        let chinaMapArea = chinaMap.append("g")
+            .attr("transform", `translate(${margins.left},${margins.top})`);
+
+
+        const histSvg = d3.select("svg#barchart");
+        const histWidth = histSvg.attr("width");
+        const histHeight = histSvg.attr("height");
+        const histMargin = { top: 20, right: 10, bottom: 50, left: 60 };
+        const histChartWidth = histWidth - histMargin.left - histMargin.right;
+        const histChartHeight = histHeight - histMargin.top - histMargin.bottom;
+
+        let annotations = histSvg.append("g").attr("id", "annotations");
+        let histChartArea = histSvg.append("g").attr("id", "points")
+            .attr("transform", `translate(${histMargin.left},${histMargin.top})`)
+
+
+        const requestData = async () => {
+
+            // Load topo json file of China
+            const china = await d3.json("dataset/topochina.json");
+            console.log(china);
+            const regionList = ["Anhui", "Beijing", "Fujian", "Gansu", "Guangdong", "Guangxi",
+                "Guizhou", "Hainan", "Hebei", "Heilongjiang", "Henan", "HongKong", "Hubei",
+                "Hunan", "Jiangsu", "Jiangxi", "Jilin", "Liaoning", "Macao", "Inner Mongolia",
+                "Ningxia", "Qinghai", "Shaanxi", "Shandong", "Shanghai", "Shanxi", "Taiwan", "Tianjin",
+                "Xinjiang", "Tibet", "Yunnan", "Zhejiang", "Chongqing", "Sichuan"]
+            const regionListCN = ["安徽", "北京", "福建", "甘肃", "广东", "广西",
+                "贵州", "海南", "河北", "黑龙江", "河南", "香港", "湖北",
+                "湖南", "江苏", "江西", "吉林", "辽宁", "澳门", "内蒙古",
+                "宁夏", "青海", "陕西", "山东", "上海", "山西", "台湾", "天津",
+                "新疆", "西藏", "云南", "浙江", "重庆", "四川"]
+            var region = topojson.feature(china, china.objects["regions.geo"]);
+            var regionMesh = topojson.mesh(china, china.objects["regions.geo"]);
+            console.log(region);
+
+            //Create a year list
+            const yearList = ["2004", "2005", "2006", "2007", "2008", "2009", "2010", "2011",
+                "2012", "2013", "2014", "2015", "2016", "2017", "2018", "2019",
+                "2020", "2021", "2022", "2023", "2024", "2025", "2026", "2027", "2028", "2029", "2030", "2031", "2032", "2033",]
+            //Create a list of year range
+            const yearRange = ["2004", "2014", "2024"]
+            //Create a topic list
+            const topicList = ["GRP", "Population", "Disposable Income", "Consumption Expenditure", "Local Government Revenue"]
+
+            //Load population file
+            var population = await d3.csv("dataset/population.csv");
+            //Change the year data from string to int
+            population.forEach(d => {
+                for (const key in d) {
+                    if (!isNaN(key)) {
+                        d[key] = parseInt(d[key], 10);
+                    }
+                }
+            });
+
+            //Load the GRP file
+            var grp = await d3.csv("dataset/GRP.csv");
+            //Change the GRP data from string to int
+            grp.forEach(d => {
+                for (const key in d) {
+                    if (!isNaN(key)) {
+                        d[key] = parseInt(d[key], 10);
+                    }
+                }
+            });
+
+            //load the disposable income file
+            var disposableIncome = await d3.csv("dataset/disposable-income.csv")
+            //change the disposable income data from string to int
+            disposableIncome.forEach(d => {
+                for (const key in d) {
+                    if (!isNaN(key)) {
+                        d[key] = parseInt(d[key], 10);
+                    }
+                }
+            });
+
+            //load the consumption expenditure file
+            var consumptionExpenditure = await d3.csv("dataset/consumption-expenditure.csv")
+            consumptionExpenditure.forEach(d => {
+                for (const key in d) {
+                    if (!isNaN(key)) {
+                        d[key] = parseInt(d[key], 10);
+                    }
+                }
+            });
+
+            //load import-export-value file
+            var localGovernRevenue = await d3.csv("dataset/local-government-revenue.csv")
+            //change the import export value from string to int
+            localGovernRevenue.forEach(d => {
+                for (const key in d) {
+                    if (!isNaN(key)) {
+                        d[key] = parseInt(d[key], 10);
+                    }
+                }
+            });
+
+            //add index to each feature
+            region.features.forEach((feature, i) => {
+                feature.index = i;
+            });
+
+            //create projection for the map
+            var projection = d3.geoMercator().fitSize([chinaMapWidth, chinaMapHeight], region);
+            var path = d3.geoPath().projection(projection);
+            console.log(path)
+
+
+            //set default selectedYear and selectedTopic
+            let selectedYearRange = "2014";
+            let selectedTopic = "GRP";
+
+            let zoomedOut = true;
+            let currentZoomIndex = null;
+            let clickedZoomIndex = null;
+
+            let hoverEnabled = true;
+
+            //Update the map in response to the topic button and year button
+            function updateMapColors() {
+                d3.select("#colorLegend").selectAll("*").remove();
+                var data;
+                if (selectedTopic === "Population") {
+                    data = population;
+                } else if (selectedTopic === "GRP") {
+                    data = grp;
+                } else if (selectedTopic === "Disposable Income") {
+                    data = disposableIncome;
+                } else if (selectedTopic === "Consumption Expenditure") {
+                    data = consumptionExpenditure;
+                } else if (selectedTopic === "Local Government Revenue") {
+                    data = localGovernRevenue;
+                }
+
+
+                //get all data of the topic
+                let allData = [];
+                data.forEach(element => {
+                    for (const key in element) {
+                        if (yearList.includes(key)) {
+                            allData.push(element[key]);
+                        }
+                    }
+                });
+
+                //get the extent of the the data of the topic
+                const extent = d3.extent(allData);
+                console.log(extent);
+
+                //create a color scale
+                //color scale reference: https://colorbrewer2.org/#type=sequential&scheme=BuGn&n=3
+                const colorScale = d3.scaleQuantile()
+                    .domain(extent)
+                    .range(["#feedde", "#fdbe85", "#fd8d3c", "#e6550d", "#a63603"]);
+
+                drawLegend("#colorLegend", colorScale);
+
+                //add topicPath to the map
+                chinaMapArea.selectAll("path.topicPath")
+                    .data(region.features)
+                    .join("path")
+                    .attr("class", "topicPath")
+                    .attr("d", path)
+                    .style("fill", d => {
+                        const regionData = data.find(row => row.Region === regionList[d.index]);
+                        let color;
+                        console.log(regionData);
+                        if (regionData !== undefined) {
+                            if (regionData[selectedYear] != undefined) {
+                                color = colorScale(regionData[selectedYear]);
+                            } else {
+                                //defualt color for unavailable data.
+                                color = "#808080";
+                            }
+                        } else {
+
+                            color = "#808080";
+                        }
+                        return color;
+                    })
+                    //keep the original data color for future use
+                    .attr("data-original-color", d => {
+                        const regionData = data.find(row => row.Region === regionList[d.index]);
+                        let color;
+                        console.log(regionData);
+                        if (regionData !== undefined) {
+                            if (regionData[selectedYear] != undefined && !isNaN(regionData[selectedYear])) {
+                                console.log("check")
+                                console.log(regionData[selectedYear])
+                                color = colorScale(regionData[selectedYear]);
+                            } else {
+                                color = "#808080";
+                            }
+                        } else {
+
+                            color = "#808080";
+                        }
+                        return color;
+                    })
+                    //add mouseover effect
+                    .on("mouseover", function (event, d) {
+                        //if hover is not enabled (set to false during zooming), return
+                        if (!hoverEnabled) return;
+
+                        //compare current zoom index with the zoom index set when a specific
+                        //province being selected, if not equal (means users do zoom in/out after
+                        //selecting action, resume mouseover)
+                        //other mouse actions follow the same principles as this one
+                        currentZoomIndex = d3.zoomTransform(chinaMapArea.node()).k;
+
+                        if (currentZoomIndex != clickedZoomIndex) {
+                            const originalColor = d3.select(this).attr("data-original-color");
+                            const regionData = getDataByTopic(selectedTopic).find(row => row.Region === regionList[d.index]);
+
+                            if (regionData !== undefined) {
+                                if (regionData[selectedYear] != undefined) {
+                                    value = regionData[selectedYear];
+                                } else {
+                                    //defualt value when data not available
+                                    value = "Data not yet availabe";
+                                }
+                            } else {
+                                value = "Data not yet availabe";
+                            }
+
+                            d3.select(this).style("fill", "#9B2A4E");
+
+                            //get the position of mouse cursor
+                            //reference: https://developer.mozilla.org/en-US/docs/Web/API/MouseEvent/pageX
+                            const x = event.pageX;
+                            const y = event.pageY;
+                            d3.select("body").append("div")
+                                .attr("class", "regionInfo")
+                                .style("position", "absolute")
+                                .style("top", `${y}px`)
+                                .style("left", `${x}px`);
+
+                            d3.select(".regionInfo").append("span")
+                                .attr("class", "regionTitle")
+                                .text(regionListCN[d.index]);
+
+                            d3.select(".regionInfo").append("span")
+                                .attr("class", "regionText")
+                                .text(regionList[d.index]);
+
+                            d3.select(".regionInfo").append("span")
+                                .attr("class", "regionText")
+                                .style("font-weight", "bold")
+                                .style("margin-top", 5)
+                                .text(`${selectedTopic + ": "}`);
+
+                            // Display value of 
+                            d3.select(".regionInfo").append("span")
+                                .attr("class", "regionText")
+                                .text(value);
+
+                        }
+                    })
+                    //add mousemove effect
+                    .on("mousemove", function (event, d) {
+                        if (!hoverEnabled) return;
+                        currentZoomIndex = d3.zoomTransform(chinaMapArea.node()).k;
+                        if (currentZoomIndex != clickedZoomIndex) {
+                            const x = event.pageX;
+                            const y = event.pageY;
+                            d3.select(".regionInfo")
+                                .style("top", `${y}px`)
+                                .style("left", `${x}px`)
+                        }
+                    })
+                    //add mouseout effect
+                    .on("mouseout", function () {
+                        if (!hoverEnabled) return;
+                        currentZoomIndex = d3.zoomTransform(chinaMapArea.node()).k;
+                        console.log('mouseout');
+                        console.log(currentZoomIndex);
+                        console.log(clickedZoomIndex);
+                        if (currentZoomIndex != clickedZoomIndex) {
+                            // Restore original color
+                            d3.select(this).style("fill", d3.select(this).attr("data-original-color"));
+                            //remove the regionInfo div
+                            d3.select(".regionInfo").remove();
+                        }
+                    });
+            }
+
+
+            function topicAnimated(topicKey) {
+                selectedTopic = topicKey;
+                updateMapColors();
+            }
+
+            function yearBarsAnimated(yearKey) {
+                selectedYear = yearKey;
+                updateMapColors();
+
+            }
+
+            //set default clickedYearRangeButton and lastClickedYearButton
+            let lastClickedYearRangeButton = null;
+            let lastClickedYearButton = null;
+
+            //add yearRange buttons
+            yearRange.forEach(d => {
+                d3.select("#yearRangeBar")
+                    .append("button")
+                    .text(d)
+                    .attr("class", "yearRangeButton yearButton")
+                    .attr("id", `${"yearRangeButton" + d}`)
+                    .on("click", function () {
+                        chinaMapArea.transition().duration(750).call(zoom.transform, d3.zoomIdentity);
+
+                        chinaMapArea.selectAll("path.topicPath")
+                            .each(function () {
+                                const originalColor = d3.select(this).attr("data-original-color");
+                                d3.select(this)
+                                    .style("fill", originalColor)
+                                    .on("click", clicked); // Re-enable click on reset
+                            });
+
+                        selectedProvince = null; // Clear selected province
+
+                        if (lastClickedYearRangeButton != null) {
+                            d3.select(lastClickedYearRangeButton).classed("clicked", false);
+                        }
+                        d3.select(this).classed("clicked", true);
+                        lastClickedYearRangeButton = this;
+                        d3.select("#yearRange").property("value", d);
+                        yearRangeAnimated(d);
+                    });
+                if (d === selectedYearRange) {
+                    d3.select("#yearRangeButton2014").classed("clicked", true);
+                    lastClickedYearRangeButton = d3.select("#yearRangeButton2014").node();
+                    d3.select("#yearRange").property("value", "2014");
+                    yearRangeAnimated(d);
+                }
+            });
+
+
+            function yearRangeAnimated(yearRangeKey) {
+                d3.select("#yearBar").selectAll(".yearButton").remove();
+                if (yearRangeKey === "2004") {
+                    chosenYearList = yearList.slice(0, 10);
+                    d3.select("#year").attr("min", 2004)
+                        .attr("max", 2013).property("value", "2004")
+                } else if (yearRangeKey === "2014") {
+                    chosenYearList = yearList.slice(10, 20);
+                    d3.select("#year").attr("min", 2014)
+                        .attr("max", 2023).property("value", "2014")
+                } else {
+                    chosenYearList = yearList.slice(20, 30);
+                    d3.select("#year").attr("min", 2024)
+                        .attr("max", 2033).property("value", "2024")
+                }
+
+
+                chosenYearList.forEach(d => {
+                    d3.select("#yearBar")
+                        .append("button")
+                        .text(d)
+                        .attr("class", "yearButton")
+                        .attr("id", `${"yearButton" + d}`)
+                        .on("click", function () {
+
+                            chinaMapArea.transition().duration(750).call(zoom.transform, d3.zoomIdentity);
+
+                            chinaMapArea.selectAll("path.topicPath")
+                                .each(function () {
+                                    const originalColor = d3.select(this).attr("data-original-color");
+                                    d3.select(this)
+                                        .style("fill", originalColor)
+                                        .on("click", clicked); // Re-enable click on reset
+                                });
+
+                            selectedProvince = null; // Clear selected province
+                            
+                            if (lastClickedYearButton != null) {
+                                d3.select(lastClickedYearButton).classed("clicked", false);
+                            }
+                            d3.select(this).classed("clicked", true);
+                            lastClickedYearButton = this;
+                            d3.select("#year").property("value", d);
+
+                            yearBarsAnimated(d);
+                        });
+
+                    const defaultYear = yearRangeKey === "2004" ? "2004" : yearRangeKey === "2014" ? "2014" : "2024";
+                    d3.select(`#yearButton${defaultYear}`).classed("clicked", true);
+                    lastClickedYearButton = d3.select(`#yearButton${defaultYear}`).node();
+
+                    yearBarsAnimated(defaultYear);
+
+
+                });
+            }
+
+            d3.select("#yearRange").on("input", function () {
+                const selectedYearRange = this.value;
+                d3.select(lastClickedYearRangeButton).classed("clicked", false);
+                lastClickedYearRangeButton = d3.select(`#yearRangeButton${selectedYearRange}`).node();
+                d3.select(lastClickedYearRangeButton).classed("clicked", true);
+                yearRangeAnimated(selectedYearRange);
+            });
+
+            d3.select("#year").on("input", function () {
+                const selectedYear = this.value;
+                d3.select(lastClickedYearButton).classed("clicked", false);
+                lastClickedYearButton = d3.select(`#yearButton${selectedYear}`).node();
+                d3.select(lastClickedYearButton).classed("clicked", true);
+                yearBarsAnimated(selectedYear);
+            });
+
+
+            //set defualt lastClickedTopicButton and selectedProvinceButton
+            let lastClickedTopicButton = null;
+            let selectedProvince = null;
+
+            topicList.forEach(d => {
+                d3.select("#topicButtons")
+                    .append("button")
+                    .attr("class", "topicButton")
+                    .attr("id", `${"topicButton" + d}`)
+                    .text(d)
+                    .on("click", function () {
+
+                        chinaMapArea.transition().duration(750).call(zoom.transform, d3.zoomIdentity);
+
+                        chinaMapArea.selectAll("path.topicPath")
+                            .each(function () {
+                                const originalColor = d3.select(this).attr("data-original-color");
+                                d3.select(this)
+                                    .style("fill", originalColor)
+                                    .on("click", clicked); // Re-enable click on reset
+                            });
+
+                        selectedProvince = null; // Clear selected province
+
+                        if (lastClickedTopicButton != null) {
+                            d3.select(lastClickedTopicButton).classed("clicked", false);
+                        }
+                        d3.select(this).classed("clicked", true);
+                        lastClickedTopicButton = this;
+                        selectedTopic = d;
+
+                        topicAnimated(d);
+
+                        if (selectedProvince) {
+                            const data = getDataByTopic(selectedTopic);
+                            const filteredData = data.find(row => row.Region === selectedProvince);
+                            showHist(filteredData);
+                            updateLabels(selectedTopic, selectedProvince);
+                        }
+
+                    });
+                if (d === "GRP") {
+                    d3.select("#topicButtonGRP").classed("clicked", true);
+                    lastClickedTopicButton = d3.select("#topicButtonGRP").node();
+                }
+
+            })
+
+
+
+            const buttonWidth = d3.select(".yearButton").node().offsetWidth;
+            //create linearScale for yearLine
+            const yearLineScale = d3.scaleLinear()
+                .domain([0, chosenYearList.length - 1])
+                .range([buttonWidth / 2, 550 - buttonWidth / 2])
+            const yearAxis = d3.select("#yearAxis");
+
+            const yearRangeScale = d3.scaleLinear()
+                .domain([0, 2])
+                .range([buttonWidth / 2, 550 - buttonWidth / 2])
+            const yearRangeAxis = d3.select("#yearRangeAxis");
+
+            //add axis lines to the yearAxis
+            yearAxis.selectAll("line").data(chosenYearList)
+                .join("line")
+                .attr("x1", (d, i) => yearLineScale(i))
+                .attr("y1", 0)
+                .attr("x2", (d, i) => yearLineScale(i))
+                .attr("y2", 6)
+                .style("stroke", "#8A1D12")
+                .style("stroke-width", 2);
+
+            yearRangeAxis.selectAll("line").data(yearRange)
+                .join("line")
+                .attr("x1", (d, i) => yearRangeScale(i))
+                .attr("y1", 0)
+                .attr("x2", (d, i) => yearRangeScale(i))
+                .attr("y2", 6)
+                .style("stroke", "#8A1D12")
+                .style("stroke-width", 2);
+
+
+            updateMapColors();
+
+            chinaMapArea.append("path").datum(regionMesh)
+                .attr("class", "outline")
+                .attr("d", path);
+
+
+
+            // Zoom in and show histogram starts here
+            // Zoom in when scrolling
+            var zoom = d3.zoom()
+                .scaleExtent([1, 20])
+                .translateExtent([[-50, -50], [chinaMapWidth + 50, chinaMapHeight + 50]])
+                .on("zoom", mapZoomed)
+                .on("end", zoomEnd);
+
+            chinaMapArea.call(zoom);
+
+            chinaMapArea.call(zoom.transform, d3.zoomIdentity);
+
+
+            //function that help coordinate zoom action with color changes
+            function mapZoomed({ transform }) {
+                chinaMapArea.attr("transform", transform.toString());
+                chinaMapArea.select('.outline')
+                    .style('stroke-width', 1 / transform.k)
+                    .attr("zoomedOut", "false");
+
+                //when there's previously selected region and users do zoom in/out after selecting
+                //a region, resume all colors for all regions to allow them to do further exploration
+                currentZoomIndex = d3.zoomTransform(chinaMapArea.node()).k;
+
+                if (clickedZoomIndex !== null && currentZoomIndex !== clickedZoomIndex) {
+                    chinaMapArea.selectAll("path.topicPath")
+                        .each(function () {
+                            const originalColor = d3.select(this).attr("data-original-color");
+                            d3.select(this).style("fill", originalColor)
+                                .on("click", clicked); // Re-enable clicks
+                        });
+
+                    clickedZoomIndex = null; // Reset clicked zoom index
+                    selectedProvince = null; // Clear any selected province
+                }
+
+                hoverEnabled = false; // Disable hover during zoom
+                d3.select(".regionInfo").remove(); // Clear any active tooltip
+            }
+
+
+
+            function zoomEnd() {
+                const transform = d3.zoomTransform(chinaMapArea.node());
+                //zoomedOut = d3.zoomTransform(chinaMapArea.node()).k === 1;
+
+                zoomedOut = transform.k <= 1.5; // Update the zoomedOut flag based on zoom level
+                console.log(`Zoom End - Zoomed Out: ${zoomedOut}`); // Debugging log
+
+                if (zoomedOut) {
+                    chinaMapArea.selectAll("path.topicPath")
+                        .each(function () {
+                            const originalColor = d3.select(this).attr("data-original-color");
+                            d3.select(this).style("fill", originalColor); // Restore original colors
+                        });
+                }
+                console.log(`zoomEnd: Zoomed Out set to ${zoomedOut}`);
+                hoverEnabled = true;
+            }
+
+
+            //When clicking on specific province, zoom in to focus on that province,
+            //update the data for histogram accordingly
+            chinaMapArea.selectAll('path.topicPath').on("click", clicked)
+
+            function getDataByTopic(topic) {
+                if (topic === "Population") return population;
+                if (topic === "GRP") return grp;
+                if (topic === "Disposable Income") return disposableIncome;
+                if (topic === "Consumption Expenditure") return consumptionExpenditure;
+                if (topic === "Local Government Revenue") return localGovernRevenue;
+            }
+
+            //initiate the lastClickedRegion to store the last region that is selected
+            let lastClickedRegion = null;
+
+            //when a region is clicked, zoom in to that region through adjusting to proper position
+            //in the map and gray out all of the other regions to emphasize on the selected region
+            //as well as reduce distraction
+            function clicked(event, d) {
+                zoomedOut = false;
+
+                d3.select("#china").append("text")
+                    .attr("x", 10)
+                    .attr("y", 20)
+                    .attr("class", "temporary-notification")
+                    .text("Animation locked when province being selected, ")
+                    .style("fill", "black")
+                    .attr("font-size", 20)
+
+                d3.select("#china").append("text")
+                    .attr("x", 10)
+                    .attr("y", 50)
+                    .attr("class", "temporary-notification2")
+                    .text("zoom in/out to resume animation or click the reset button.")
+                    .style("fill", "black")
+                    .attr("font-size", 20)
+
+                setTimeout(() => {
+                    d3.select(".temporary-notification").remove();
+                    d3.select(".temporary-notification2").remove();
+                }, 4000);
+
+                // Highlight only the selected province and gray out others
+                chinaMapArea.selectAll("path.topicPath")
+                    .each(function () {
+                        if (this === event.target) {
+                            d3.select(this)
+                                .style("fill", d3.select(this).attr("data-original-color"))
+                                .style("stroke", "white")
+                                .style("stroke-width", 1.5)
+                                .attr("data-clicked", "true");
+                        } else {
+                            d3.select(this)
+                                .style("fill", "#808080")
+                                .attr("data-clicked", null)
+                                .style("stroke", null)
+                                .style("stroke-width", null)
+                                .on("click", null); // Disable click on other regions
+                        }
+                    });
+
+                lastClickedRegion = event.target;
+
+                // Calculate zoom transform for the selected province
+                let bounds = path.bounds(d);
+                let dx = bounds[1][0] - bounds[0][0];
+                let dy = bounds[1][1] - bounds[0][1];
+                let x = (bounds[0][0] + bounds[1][0]) / 2;
+                let y = (bounds[0][1] + bounds[1][1]) / 2;
+                let scale = Math.max(1, Math.min(10, 0.9 / Math.max(dx / chinaMapWidth, dy / chinaMapHeight)));
+                let translate = [chinaMapWidth / 2 - x * scale, chinaMapHeight / 2 - y * scale];
+
+                chinaMapArea.transition()
+                    .duration(750)
+                    .call(zoom.transform, d3.zoomIdentity.translate(translate[0], translate[1]).scale(scale))
+                    .end()
+                    .then(() => {
+                        clickedZoomIndex = d3.zoomTransform(chinaMapArea.node()).k; // Store zoom level on click
+                    });
+
+                selectedProvince = regionList[d.index];
+                const data = getDataByTopic(selectedTopic);
+                const filteredData = data.find(row => row.Region === selectedProvince);
+
+                showHist(filteredData);
+                updateLabels(selectedTopic, selectedProvince);
+            }
+
+
+
+
+
+            // Append x-axis label
+            histChartArea.append("text")
+                .attr("class", "x-axis-label")
+                .attr("x", histChartWidth / 2)
+                .attr("y", histChartHeight + 40)
+                .style("text-anchor", "middle")
+                .style("font-size", "14px");
+
+            // Append y-axis label
+            histChartArea.append("text")
+                .attr("class", "y-axis-label")
+                .attr("transform", `rotate(-90)`)
+                .attr("x", -histChartHeight / 2)
+                .attr("y", -50)
+                .style("text-anchor", "middle")
+                .style("font-size", "14px");
+
+            function updateLabels(selectedTopic, selectedProvince) {
+                const topicLabels = {
+                    "GRP": "Gross Regional Product (GRP)",
+                    "Population": "Population (millions)",
+                    "Disposable Income": "Disposable Income (Yuan)",
+                    "Consumption Expenditure": "Consumption Expenditure (Yuan)",
+                    "Local Government Revenue": "Local Government Revenue (Yuan)"
+                };
+                // Update histogram title
+                histSvg.selectAll(".hist-title").remove();
+                histSvg.append("text")
+                    .attr("class", "hist-title")
+                    .attr("x", histChartWidth / 2 + histMargin.left)
+                    .attr("y", histMargin.top - 5)
+                    .style("text-anchor", "middle")
+                    .style("font-size", "16px")
+                    .style("font-weight", "bold")
+                    .text(`Histogram of ${topicLabels[selectedTopic]} for ${selectedProvince}`);
+
+
+                // Update x-axis label with selected topic
+                d3.select(".x-axis-label")
+                    .text(`Year`);
+
+                // Update y-axis label with selected topic
+                d3.select(".y-axis-label")
+                    .text(`${topicLabels[selectedTopic]} of ${selectedProvince}`);
+
+            }
+
+            //display the histogram
+            function showHist(data) {
+                histSvg.selectAll(".hist-title").remove(); 
+                histSvg.append("text")
+                    .attr("class", "hist-title")
+                    .attr("x", histChartWidth / 2 + histMargin.left) 
+                    .attr("y", histMargin.top - 20) 
+                    .style("text-anchor", "middle")
+                    .style("font-size", "16px")
+                    .style("font-weight", "bold")
+                    .text(`Histogram of ${selectedTopic} for ${selectedProvince}`);
+                const gradient = histSvg.append("defs")
+                    .append("linearGradient")
+                    .attr("id", "gradient")
+                    .attr("x1", "0%")
+                    .attr("x2", "0%")
+                    .attr("y1", "0%")
+                    .attr("y2", "100%");
+
+                gradient.append("stop")
+                    .attr("offset", "0%")
+                    .attr("stop-color", "#E97A63") // Top color
+                    .attr("stop-opacity", 1);
+
+                gradient.append("stop")
+                    .attr("offset", "100%")
+                    .attr("stop-color", "#DC6142") // Bottom color
+                    .attr("stop-opacity", 1);
+                const yearData = Object.keys(data)
+                    .filter(key => !isNaN(key))
+                    .map(year => ({ year: +year, value: data[year] }));
+
+                const x = d3.scaleBand()
+                    .domain(yearData.map(d => d.year))
+                    .range([0, histChartWidth])
+                    .padding(0.1);
+
+                const y = d3.scaleLinear()
+                    .domain([0, d3.max(yearData, d => d.value)])
+                    .range([histChartHeight, 0]);
+
+                histChartArea.selectAll('rect')
+                    .data(yearData)
+                    .join('rect')
+                    .attr('x', d => x(d.year))
+                    .attr('y', d => y(d.value))
+                    .attr('width', x.bandwidth())
+                    .attr('height', d => histChartHeight - y(d.value))
+                    .attr('fill', 'url(#gradient)');
+
+                const valueScale = d3.scaleLinear()
+                    .domain([0, d3.max(yearData, d => d.value)])
+                    .range([histChartHeight, 0]);
+
+                annotations.selectAll(".x.axis").remove();
+                annotations.selectAll(".y.axis").remove();
+                annotations.selectAll(".y.gridlines").remove();
+                let leftAxis = d3.axisLeft(valueScale);
+                let leftGridlines = d3.axisLeft(valueScale)
+                    .tickSize(-histChartWidth - 10)
+                    .tickFormat("")
+                annotations.append("g")
+                    .attr("class", "y axis")
+                    .attr("transform", `translate(${histMargin.left - 10},${histMargin.top})`)
+                    .call(leftAxis)
+                annotations.append("g")
+                    .attr("class", "y gridlines")
+                    .attr("transform", `translate(${histMargin.left - 10},${histMargin.top})`)
+                    .call(leftGridlines)
+                    .style("stroke", "#cccccc") // Light gray
+                    .style("stroke-dasharray", "3,3"); // Dashed lines;
+
+
+                const xScale = d3.scaleBand()
+                    .domain(d3.range(2004, 2025)) // Years from 2004 to 2024
+                    .range([0, histChartWidth])
+                    .padding(0.05);
+                let bottomAxis = d3.axisBottom(xScale)
+                const xAxis = d3.axisBottom(x)
+                    .tickValues(yearData.map(d => d.year))
+                    .tickFormat(d => d);
+
+                annotations.append("g")
+                    .attr("class", "x axis")
+                    .attr("transform", `translate(${histMargin.left}, ${histHeight - histMargin.bottom})`)
+                    .call(xAxis)
+                    .selectAll("text")
+                    .attr("transform", "rotate(-30)");
+                // .style("text-anchor", "middle");
+
+                d3.select(".x.axis").selectAll("line, path")
+                    .style("stroke", "#333333");
+
+                d3.select(".y.axis").selectAll("line, path")
+                    .style("stroke", "#333333");
+
+                d3.select(".x.axis").selectAll("text")
+                    .style("font-family", "Roboto")
+                    .style("font-size", "12px")
+                    .style("fill", "#333333");
+
+                d3.select(".y.axis").selectAll("text")
+                    .style("font-family", "Roboto")
+                    .style("font-size", "12px")
+                    .style("fill", "#333333");
+            }
+
+            d3.select("#resetButton").on("click", function () {
+                chinaMapArea.transition().duration(750).call(zoom.transform, d3.zoomIdentity);
+
+                chinaMapArea.selectAll("path.topicPath")
+                    .each(function () {
+                        const originalColor = d3.select(this).attr("data-original-color");
+                        d3.select(this)
+                            .style("fill", originalColor)
+                            .on("click", clicked); // Re-enable click on reset
+                    });
+
+                selectedProvince = null; // Clear selected province
+            });
+
+        }
+        requestData();
+
+        // Flexible legend-drawing function - Jeff Rzeszotarski, 2022
+        //   Released under MIT Free license
+        //  Takes in an SVG element selector <legendSelector> and a d3 color scale <legendColorScale>
+        //
+        // Usage example: drawLegend("#legendID", grossIncomeColorScale)
+        function drawLegend(legendSelector, legendColorScale) {
+
+            // This code should adapt to a variety of different kinds of color scales
+            //  Credit Prof. Rz if you are basing a legend on this structure, and note PERFORMANCE CONSIDERATIONS
+
+            // Shrink legend bar by 5 px inwards from sides of SVG
+            const offsets = {
+                width: 10,
+                top: 2,
+                bottom: 24
+            };
+            // Number of integer 'pixel steps' to draw when showing continuous scales
+            //    Warning, not using a canvas element so lots of rect tags will be created for low stepSize, causing issues with performance -- keep this large
+            const stepSize = 4;
+            // Extend the minmax by 0% in either direction to expose more features by default
+            const minMaxExtendPercent = 0;
+
+
+            const legend = d3.select(legendSelector);
+            const legendHeight = legend.attr("height");
+            const legendBarWidth = legend.attr("width") - (offsets.width * 2);
+            const legendMinMax = d3.extent(legendColorScale.domain());
+            // recover the min and max values from most kinds of numeric scales
+            const minMaxExtension = (legendMinMax[1] - legendMinMax[0]) * minMaxExtendPercent;
+            const barHeight = legendHeight - offsets.top - offsets.bottom;
+
+            // In this case the "data" are pixels, and we get numbers to use in colorScale
+            // Use this to make axis labels
+            let barScale = d3.scaleLinear()
+                .domain([legendMinMax[0], legendMinMax[1]])
+                .range([10, legendBarWidth - 10]);
+            let barAxis = d3.axisBottom(barScale);
+
+            // Place for bar slices to live
+            let bar = legend.append("g")
+                .attr("class", "legend colorbar")
+                .attr("transform", `translate(${offsets.width},${offsets.top})`)
+
+
+            // Check if we're using a binning scale - if so, we make blocks of color
+            if (legendColorScale.hasOwnProperty('thresholds') || legendColorScale.hasOwnProperty('quantiles')) {
+                // Get the thresholds
+                let thresholds = [];
+                if (legendColorScale.hasOwnProperty('thresholds')) { thresholds = legendColorScale.thresholds() }
+                else { thresholds = legendColorScale.quantiles() }
+
+                const barThresholds = [legendMinMax[0], ...thresholds, legendMinMax[1]];
+
+                // Use the quantile breakpoints plus the min and max of the scale as tick values
+                barAxis.tickValues(barThresholds);
+
+                // Draw rectangles between the threshold segments
+                for (let i = 0; i < barThresholds.length - 1; i++) {
+                    let dataStart = barThresholds[i];
+                    let dataEnd = barThresholds[i + 1];
+                    let pixelStart = barAxis.scale()(dataStart);
+                    let pixelEnd = barAxis.scale()(dataEnd);
+
+                    bar.append("rect")
+                        .attr("x", pixelStart)
+                        .attr("y", 0)
+                        .attr("width", pixelEnd - pixelStart)
+                        .attr("height", barHeight)
+                        .style("fill", legendColorScale((dataStart + dataEnd) / 2.0));
+                }
+            }
+
+            //Refer to the professor's notes
+            else if (legendColorScale.hasOwnProperty('rangeRound')) {
+
+                for (let i = 0; i < legendBarWidth; i = i + stepSize) {
+
+                    let center = i + (stepSize / 2);
+                    let dataCenter = barAxis.scale().invert(center);
+
+                    // below normal scale bounds
+                    if (dataCenter < legendMinMax[0]) {
+                        bar.append("rect")
+                            .attr("x", i)
+                            .attr("y", 0)
+                            .attr("width", stepSize)
+                            .attr("height", barHeight)
+                            .style("fill", legendColorScale(legendMinMax[0]));
+                    }
+                    // within normal scale bounds
+                    else if (dataCenter < legendMinMax[1]) {
+                        bar.append("rect")
+                            .attr("x", i)
+                            .attr("y", 0)
+                            .attr("width", stepSize)
+                            .attr("height", barHeight)
+                            .style("fill", legendColorScale(dataCenter));
+                    }
+                    // above normal scale bounds
+                    else {
+                        bar.append("rect")
+                            .attr("x", i)
+                            .attr("y", 0)
+                            .attr("width", stepSize)
+                            .attr("height", barHeight)
+                            .style("fill", legendColorScale(legendMinMax[1]));
+                    }
+
+                }
+            }
+            // Otherwise we have a nominal scale
+            else {
+                let nomVals = legendColorScale.domain().sort();
+
+                // Use a scaleBand to make blocks of color and simple labels
+                let barScale = d3.scaleBand().domain(nomVals)
+                    .range([0, legendBarWidth])
+                    .padding(0.05);
+                barAxis.scale(barScale);
+
+                // Draw rectangles for each nominal entry
+                nomVals.forEach(d => {
+                    bar.append("rect")
+                        .attr("x", barScale(d))
+                        .attr("y", 0)
+                        .attr("width", barScale.bandwidth())
+                        .attr("height", barHeight)
+                        .style("fill", legendColorScale(d));
+                });
+            }
+
+            // Finally, draw legend labels
+            legend.append("g")
+                .attr("class", "legend axis")
+                .attr("transform", `translate(${offsets.width},${offsets.top + barHeight + 5})`)
+                .call(barAxis);
+
+        }
+
+    </script>
+</body>
